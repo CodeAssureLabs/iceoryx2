@@ -1,0 +1,66 @@
+schema_version: 1
+manifest_version: 1
+repo: CodeAssureLabs/iceoryx2
+# Layering mirrors the Cargo crate DAG documented in the workspace Cargo.toml and
+# each crate's [dependencies]:
+#   iceoryx2-pal/* (data)  <-  iceoryx2-bb/* (domain)  <-  iceoryx2-cal (service)
+#   <-  iceoryx2 + iceoryx2-services/-gateway/-link (api)
+#   <-  iceoryx2-cli, iceoryx2-ffi, examples, benchmarks, userland, integrations (entry)
+# iceoryx2-log and iceoryx2-bb/testing are cross-cutting helpers; iceoryx2-pal/configuration
+# holds compile-time constants (config).
+layers:
+  entry: [api, service, domain, data]
+  api: [service, domain, data]
+  service: [domain, data]
+  domain: [data]
+  data: []
+  tests: [entry, api, service, domain, data]
+  build-infra: []
+  docs: []
+cross_cutting: [utils, config]
+forbidden_edges:
+  - id: bb-no-cal
+    from: domain
+    to: service
+    reason: "iceoryx2-bb (building blocks) sit below iceoryx2-cal (communication abstraction layer); no bb crate lists iceoryx2-cal in its [dependencies]"
+    check: blocking
+    severity: high
+  - id: pal-no-bb
+    from: data
+    to: domain
+    reason: "iceoryx2-pal (platform abstraction) is the lowest layer; it must never depend on iceoryx2-bb building blocks"
+    check: blocking
+    severity: high
+  - id: cal-no-iceoryx2
+    from: service
+    to: api
+    reason: "iceoryx2-cal provides the OS-primitive abstractions consumed by the iceoryx2 crate; it must not depend on the public API crate"
+    check: blocking
+    severity: high
+required_companions:
+  - id: service-change-needs-test
+    when: "iceoryx2/src/service/**/*.rs"
+    require: ["iceoryx2/tests-common/src/**", "iceoryx2/conformance-tests/tests-common/src/**"]
+    reason: "changes to the service layer of the iceoryx2 crate ship with a test in iceoryx2/tests-common or iceoryx2/conformance-tests/tests-common (the crate's test suites)"
+    check: detect_only
+  - id: port-change-needs-test
+    when: "iceoryx2/src/port/**/*.rs"
+    require: ["iceoryx2/tests-common/src/**", "iceoryx2/conformance-tests/tests-common/src/**"]
+    reason: "changes to a port (publisher/subscriber/client/server/...) ship with a test in the iceoryx2 test suites"
+    check: detect_only
+invariants:
+  - id: no-raw-panic-in-iceoryx2
+    within: "iceoryx2/src/**"
+    forbid_pattern: '\bpanic!\s*\('
+    reason: "BEST_PRACTICES.md: never call panic!(...) directly, always use the fatal_panic! macro so a FATAL log line is emitted"
+    check: detect_only
+  - id: no-println-in-cal
+    within: "iceoryx2-cal/src/**"
+    forbid_pattern: '(?m)^\s*(println|eprintln)!'
+    reason: "iceoryx2-cal logs through iceoryx2_log (fail!/debug!/warn!), never to stdout/stderr directly"
+    check: detect_only
+  - id: no-thread-spawn-in-cal
+    within: "iceoryx2-cal/src/**"
+    forbid_pattern: '\bthread::spawn\b'
+    reason: "iceoryx2-cal is no_std-capable; threads come from iceoryx2_bb_posix::thread, never std::thread::spawn"
+    check: detect_only
