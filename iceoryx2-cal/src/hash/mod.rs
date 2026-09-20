@@ -30,6 +30,7 @@ use alloc::string::String;
 use iceoryx2_bb_container::semantic_string::{SemanticString, SemanticStringError};
 use iceoryx2_bb_system_types::base64url::Base64Url;
 
+pub mod hashed_file_name;
 pub mod recommended;
 pub mod sha1;
 
