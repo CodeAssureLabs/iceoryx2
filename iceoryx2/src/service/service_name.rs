@@ -115,6 +115,11 @@ impl ServiceName {
         name.starts_with(INTERNAL_SERVICE_PREFIX)
     }
 
+    /// Returns `true` if this [`ServiceName`] belongs to an internal iceoryx2 service.
+    pub fn is_internal(&self) -> bool {
+        Self::has_iox2_prefix(self.as_str())
+    }
+
     /// Returns the maximum length of a [`ServiceName`].
     pub fn max_len() -> usize {
         ServiceNameString::capacity()
