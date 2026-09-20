@@ -10,17 +10,19 @@
 //
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
-#![cfg_attr(not(feature = "std"), no_std)]
+use iceoryx2::prelude::*;
+use iceoryx2::service::service_name::ServiceName;
+use iceoryx2_bb_testing::assert_that;
+use iceoryx2_bb_testing_macros::test;
 
-extern crate alloc;
-extern crate iceoryx2_bb_loggers;
+#[test]
+fn user_service_name_is_not_internal() {
+    let sut = ServiceName::new("my/funky/service").unwrap();
+    assert_that!(sut.is_internal(), eq false);
+}
 
-pub mod attribute_tests;
-pub mod node_name_tests;
-pub mod port_name_tests;
-pub mod service_event_thread_safety_tests;
-pub mod service_name_tests;
-pub mod service_publish_subscribe_thread_safety_tests;
-pub mod service_request_response_thread_safety_tests;
-pub mod service_static_config_tests;
-pub mod unique_id_generator_tests;
+#[test]
+fn prefixed_service_name_is_internal() {
+    let sut = ServiceName::__internal_new_prefixed("discovery").unwrap();
+    assert_that!(sut.is_internal(), eq true);
+}
