@@ -30,8 +30,8 @@ pub unsafe fn strnlen(ptr: *const core::ffi::c_char, len: usize) -> usize {
     len
 }
 
-/// Adds escape characters to the string so that it can be used for console output.
-pub fn as_escaped_string(bytes: &[u8]) -> alloc::string::String {
+/// Escapes the bytes so that the resulting string can be used for console output.
+pub fn escape_for_display(bytes: &[u8]) -> alloc::string::String {
     unsafe {
         alloc::string::String::from_utf8_unchecked(
             bytes
