@@ -66,6 +66,7 @@ pub mod process_state;
 pub mod read_write_mutex;
 pub mod scheduler;
 pub mod semaphore;
+pub mod service_lookup;
 pub mod shared_memory;
 pub mod signal;
 pub mod signal_set;
