@@ -39,10 +39,10 @@ pub fn attach_detach_works() {
 }
 
 #[test]
-pub fn duration_until_next_deadline_is_max_for_empty_queue() {
+pub fn time_until_next_deadline_is_max_for_empty_queue() {
     let sut = DeadlineQueueBuilder::new().create().unwrap();
 
-    assert_that!(sut.duration_until_next_deadline().unwrap(), eq Duration::MAX);
+    assert_that!(sut.time_until_next_deadline().unwrap(), eq Duration::MAX);
 }
 
 #[test]
@@ -51,7 +51,7 @@ pub fn next_iteration_works_zero_deadline() {
 
     let _guard = sut.add_deadline_interval(Duration::from_secs(0)).unwrap();
 
-    assert_that!(sut.duration_until_next_deadline().unwrap(), eq Duration::from_secs(0));
+    assert_that!(sut.time_until_next_deadline().unwrap(), eq Duration::from_secs(0));
 }
 
 #[test]
@@ -62,8 +62,8 @@ pub fn next_iteration_works_smallest_deadline_added_first() {
     let _guard_2 = sut.add_deadline_interval(Duration::from_secs(10)).unwrap();
     let _guard_2 = sut.add_deadline_interval(Duration::from_secs(100)).unwrap();
 
-    assert_that!(sut.duration_until_next_deadline().unwrap(), le Duration::from_secs(5));
-    assert_that!(sut.duration_until_next_deadline().unwrap(), ge Duration::from_secs(1));
+    assert_that!(sut.time_until_next_deadline().unwrap(), le Duration::from_secs(5));
+    assert_that!(sut.time_until_next_deadline().unwrap(), ge Duration::from_secs(1));
 }
 
 #[test]
@@ -74,8 +74,8 @@ pub fn next_iteration_works_smallest_deadline_added_last() {
     let _guard_2 = sut.add_deadline_interval(Duration::from_secs(10)).unwrap();
     let _guard_3 = sut.add_deadline_interval(Duration::from_secs(5)).unwrap();
 
-    assert_that!(sut.duration_until_next_deadline().unwrap(), le Duration::from_secs(5));
-    assert_that!(sut.duration_until_next_deadline().unwrap(), ge Duration::from_secs(1));
+    assert_that!(sut.time_until_next_deadline().unwrap(), le Duration::from_secs(5));
+    assert_that!(sut.time_until_next_deadline().unwrap(), ge Duration::from_secs(1));
 }
 
 #[test]
@@ -90,8 +90,8 @@ pub fn removing_deadline_works() {
 
     drop(_guard_3);
 
-    assert_that!(sut.duration_until_next_deadline().unwrap(), ge Duration::from_secs(10));
-    assert_that!(sut.duration_until_next_deadline().unwrap(), le Duration::from_secs(100));
+    assert_that!(sut.time_until_next_deadline().unwrap(), ge Duration::from_secs(10));
+    assert_that!(sut.time_until_next_deadline().unwrap(), le Duration::from_secs(100));
 }
 
 #[test]
@@ -181,7 +181,7 @@ pub fn missed_deadline_iteration_stops_when_requested() {
 }
 
 #[test]
-pub fn duration_until_next_deadline_is_zero_if_deadline_is_already_missed() {
+pub fn time_until_next_deadline_is_zero_if_deadline_is_already_missed() {
     let sut = DeadlineQueueBuilder::new().create().unwrap();
 
     let guard_1 = sut
@@ -191,7 +191,7 @@ pub fn duration_until_next_deadline_is_zero_if_deadline_is_already_missed() {
 
     nanosleep(Duration::from_millis(110)).expect("failed to sleep");
 
-    let next_deadline = sut.duration_until_next_deadline().unwrap();
+    let next_deadline = sut.time_until_next_deadline().unwrap();
     assert_that!(next_deadline, eq Duration::ZERO);
 
     let mut missed_deadline_counter = 0;
@@ -208,7 +208,7 @@ pub fn duration_until_next_deadline_is_zero_if_deadline_is_already_missed() {
 }
 
 #[test]
-pub fn duration_until_next_deadline_is_not_zero_if_missed_deadline_have_been_handled() {
+pub fn time_until_next_deadline_is_not_zero_if_missed_deadline_have_been_handled() {
     let sut = DeadlineQueueBuilder::new().create().unwrap();
 
     let _guard_1 = sut
@@ -218,12 +218,12 @@ pub fn duration_until_next_deadline_is_not_zero_if_missed_deadline_have_been_han
 
     nanosleep(Duration::from_millis(110)).expect("failed to sleep");
 
-    let next_deadline = sut.duration_until_next_deadline().unwrap();
+    let next_deadline = sut.time_until_next_deadline().unwrap();
     assert_that!(next_deadline, eq Duration::ZERO);
 
     sut.missed_deadlines(|_| CallbackProgression::Continue)
         .unwrap();
 
-    let next_deadline = sut.duration_until_next_deadline().unwrap();
+    let next_deadline = sut.time_until_next_deadline().unwrap();
     assert_that!(next_deadline, ne Duration::ZERO);
 }

@@ -27,7 +27,7 @@
 //! let guard_2 = deadline_queue.add_deadline_interval(Duration::from_secs(5));
 //! let guard_3 = deadline_queue.add_deadline_interval(Duration::from_secs(9));
 //!
-//! std::thread::sleep(deadline_queue.duration_until_next_deadline().unwrap());
+//! std::thread::sleep(deadline_queue.time_until_next_deadline().unwrap());
 //!
 //! // contains all the deadlines where the deadline was hit
 //! let mut missed_deadlines = vec![];
@@ -160,7 +160,7 @@ impl Attachment {
 
 /// The [`DeadlineQueue`] allows the user to attach multiple periodic deadline_queues with
 /// [`DeadlineQueue::add_deadline_interval()`], to wait on them by acquiring the waiting time to the next deadline_queue
-/// with [`DeadlineQueue::duration_until_next_deadline()`] and to acquire all missed deadline_queues via
+/// with [`DeadlineQueue::time_until_next_deadline()`] and to acquire all missed deadline_queues via
 /// [`DeadlineQueue::missed_deadlines()`].
 #[derive(Debug)]
 pub struct DeadlineQueue {
@@ -184,7 +184,7 @@ impl DeadlineQueue {
 
     /// Adds a cyclic deadline to the [`DeadlineQueue`] and returns an [`DeadlineQueueGuard`] to
     /// identify the attachment uniquely.
-    /// [`DeadlineQueue::duration_until_next_deadline()`] will schedule the timings in a way that the
+    /// [`DeadlineQueue::time_until_next_deadline()`] will schedule the timings in a way that the
     /// attached deadline is considered cyclicly.
     pub fn add_deadline_interval(
         &self,
@@ -232,7 +232,7 @@ impl DeadlineQueue {
 
     /// Returns the waiting duration until the next deadline is reached. If there have been
     /// already deadlines missed it returns a duration of zero.
-    pub fn duration_until_next_deadline(&self) -> Result<Duration, TimeError> {
+    pub fn time_until_next_deadline(&self) -> Result<Duration, TimeError> {
         if self.is_empty() {
             return Ok(Duration::MAX);
         }

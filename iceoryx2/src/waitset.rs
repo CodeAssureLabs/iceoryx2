@@ -933,7 +933,7 @@ impl<Service: crate::service::Service> WaitSet<Service> {
         }
 
         let next_timeout = fail!(from self,
-                                 when self.deadline_queue.duration_until_next_deadline(),
+                                 when self.deadline_queue.time_until_next_deadline(),
                                  with WaitSetRunError::InternalError,
                                  "{msg} since the next timeout could not be acquired.");
         let next_timeout = next_timeout.min(timeout);
