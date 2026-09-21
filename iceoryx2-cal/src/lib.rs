@@ -24,6 +24,7 @@ extern crate iceoryx2_bb_loggers;
 pub mod arc_sync_policy;
 pub mod bag;
 pub mod communication_channel;
+pub mod config_probe;
 pub mod dynamic_storage;
 pub mod event;
 pub mod hash;
