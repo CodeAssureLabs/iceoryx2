@@ -1,4 +1,4 @@
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -10,12 +10,12 @@
 //
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
-pub mod cpu_set_t;
-pub mod dirent_name;
-pub(crate) mod error_enum_generator;
-pub mod mem_zeroed_struct;
-pub mod sockaddr_in;
-pub(crate) mod string_operations;
+//! Buffer sizing for directory-entry names returned by the platform layer.
 
-#[cfg(not(target_os = "windows"))]
-pub(crate) mod scandir;
+use iceoryx2_pal_configuration::FILENAME_LENGTH;
+
+/// Returns the number of bytes a caller has to reserve for one directory-entry
+/// name, including the terminating null byte.
+pub const fn dirent_name_capacity() -> usize {
+    FILENAME_LENGTH + 1
+}
