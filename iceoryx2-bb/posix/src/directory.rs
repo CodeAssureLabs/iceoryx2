@@ -496,24 +496,21 @@ impl Directory {
         for i in 0..number_of_directory_entries {
             let raw_name =
                 unsafe { (*(*namelist.offset(i as isize))).d_name.as_ptr() as *mut posix::c_char };
-            let raw_name_length = unsafe { strnlen(raw_name, FileName::max_len()) };
-
-            if raw_name_length == 0 {
-                continue;
-            }
 
             const DOT: posix::c_char = b'.' as _;
-            // dot is skipped
-            if raw_name_length == 1 && unsafe { *raw_name == DOT } {
-                continue;
-            }
-
-            // dot dot is skipped
-            if raw_name_length == 2
-                && unsafe { *raw_name == DOT }
-                && unsafe { *raw_name.offset(1) == DOT }
-            {
-                continue;
+            // Skip dot and dot-dot entries by checking the first characters
+            unsafe {
+                if *raw_name == 0 {
+                    continue; // empty name
+                }
+                if *raw_name == DOT {
+                    if *raw_name.offset(1) == 0 {
+                        continue; // "."
+                    }
+                    if *raw_name.offset(1) == DOT && *raw_name.offset(2) == 0 {
+                        continue; // ".."
+                    }
+                }
             }
 
             match unsafe { FileName::from_c_str(raw_name) } {
