@@ -220,6 +220,9 @@ pub mod port_factory;
 /// Represents the name of a [`Service`]
 pub mod service_name;
 
+/// Helpers around the internal service name prefix.
+pub mod naming_prefix;
+
 /// Represents the unique hash of a [`Service`]
 pub mod service_hash;
 
@@ -1072,7 +1075,7 @@ pub trait Service: Debug + Sized + internal::ServiceInternal<Self> + Clone + Sen
     /// ```
     fn list<F: FnMut(ServiceDetails<Self>) -> CallbackProgression>(
         config: &config::Config,
-        mut callback: F,
+        mut on_service_details: F,
     ) -> Result<(), ServiceListError> {
         let msg = "Unable to list all services";
         let origin = "Service::list_from_config()";
@@ -1094,7 +1097,7 @@ pub trait Service: Debug + Sized + internal::ServiceInternal<Self> + Clone + Sen
                 }
             };
             if let Ok(Some(service_details)) = __internal_details::<Self>(config, &hash)
-                && callback(service_details) == CallbackProgression::Stop
+                && on_service_details(service_details) == CallbackProgression::Stop
             {
                 break;
             }
@@ -1184,7 +1187,7 @@ fn read_static_service_config<S: Service>(
     };
 
     let mut content = CoreString::from_utf8(vec![b' '; reader.len() as usize]).unwrap();
-    match reader.read(unsafe { content.as_mut_vec().as_mut_slice() }) {
+    match StaticStorage::read(&reader, unsafe { content.as_mut_vec().as_mut_slice() }) {
         Ok(_) => (),
         Err(StaticStorageReadError::Interrupt) => {
             fail!(from origin, with ServiceDetailsError::Interrupt,
