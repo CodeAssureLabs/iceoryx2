@@ -12,9 +12,10 @@
 
 //! Builds the key under which a static storage entry of a service is published.
 
-use iceoryx2::service::service_name::{ServiceName, ServiceNameError};
+use iceoryx2_bb_container::semantic_string::{SemanticString, SemanticStringError};
+use iceoryx2_bb_system_types::file_name::FileName;
 
-/// Validates `name` and returns the [`ServiceName`] used as static storage key.
-pub fn service_key(name: &str) -> Result<ServiceName, ServiceNameError> {
-    ServiceName::new(name)
+/// Validates `name` and returns the [`FileName`] used as static storage key.
+pub fn service_key(name: &str) -> Result<FileName, SemanticStringError> {
+    FileName::new(name.as_bytes())
 }
