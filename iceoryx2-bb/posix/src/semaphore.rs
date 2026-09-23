@@ -204,7 +204,7 @@ pub trait SemaphoreInterface: internal::SemaphoreHandle + Debug {
                     .clock_type(self.clock_type())
                     .create(), "{} since the adaptive wait could not be created.", msg);
 
-                match adaptive_wait.timed_wait_while(
+                match adaptive_wait.wait_while_with_timeout(
                     || -> Result<bool, SemaphoreWaitError> { Ok(!self.try_wait()?) },
                     timeout,
                 ) {
