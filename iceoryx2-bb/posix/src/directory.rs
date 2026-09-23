@@ -538,10 +538,16 @@ impl Directory {
     }
 
     /// Returns true if a directory already exists, otherwise false
-    pub fn does_exist(path: &Path) -> Result<bool, MetadataFromPathError> {
-        let origin = "Directory::does_exist()";
-        let msg = format!("Unable to determine if directory \"{path}\" does exist");
-        Metadata::does_exist(path, origin, &msg, FileType::Directory)
+    pub fn does_exist(path: &Path) -> Result<bool, DirectoryOpenError> {
+        if unsafe { posix::access(path.as_c_str(), posix::F_OK) } == -1 {
+            match Errno::get() {
+                Errno::ENOENT => return Ok(false),
+                Errno::EACCES => return Err(DirectoryOpenError::InsufficientPermissions),
+                Errno::ELOOP => return Err(DirectoryOpenError::LoopInSymbolicLinks),
+                _ => return Err(DirectoryOpenError::DoesNotExist),
+            }
+        }
+        Ok(true)
     }
 
     fn acquire_metadata(

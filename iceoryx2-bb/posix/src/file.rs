@@ -924,10 +924,16 @@ impl File {
     }
 
     /// Returns true if `path` exists, otherwise false.
-    pub fn does_exist(path: &FilePath) -> Result<bool, MetadataFromPathError> {
-        let origin = "File::does_exist()";
-        let msg = format!("Unable to determine if file \"{path}\" does exist");
-        Metadata::does_exist(&path.into(), origin, &msg, FileType::File)
+    pub fn does_exist(path: &FilePath) -> Result<bool, FileOpenError> {
+        if unsafe { posix::access(path.as_c_str(), posix::F_OK) } == -1 {
+            match Errno::get() {
+                Errno::ENOENT => return Ok(false),
+                Errno::EACCES => return Err(FileOpenError::InsufficientPermissions),
+                Errno::ELOOP => return Err(FileOpenError::LoopInSymbolicLinks),
+                _ => return Err(FileOpenError::FileDoesNotExist),
+            }
+        }
+        Ok(true)
     }
 
     /// Deletes the file managed by self
