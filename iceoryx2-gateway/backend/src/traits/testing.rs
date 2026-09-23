@@ -44,7 +44,7 @@ pub trait Testing {
             .expect("failed to create adaptive wait");
 
         let succeeded = adaptive_wait
-            .timed_wait_while(
+            .wait_while_with_timeout(
                 || -> Result<bool, ()> {
                     match f() {
                         Ok(()) => Ok(false),
