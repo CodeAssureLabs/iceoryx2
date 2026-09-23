@@ -221,6 +221,7 @@ pub mod port_factory;
 pub mod service_name;
 
 /// Helpers around the internal service name prefix.
+#[doc(hidden)]
 pub mod naming_prefix;
 
 /// Represents the unique hash of a [`Service`]
