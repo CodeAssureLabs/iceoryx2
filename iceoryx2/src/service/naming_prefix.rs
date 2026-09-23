@@ -17,7 +17,6 @@ use crate::service::service_name::{INTERNAL_SERVICE_PREFIX, ServiceName};
 /// Returns the service name without the internal `iox2://` prefix. Names without
 /// the prefix are returned unchanged.
 pub fn strip_internal_prefix(name: &ServiceName) -> &str {
-    name.as_str()
-        .strip_prefix(INTERNAL_SERVICE_PREFIX)
-        .unwrap_or(name.as_str())
+    let name = ServiceName::as_str(name);
+    name.strip_prefix(INTERNAL_SERVICE_PREFIX).unwrap_or(name)
 }

@@ -1075,7 +1075,7 @@ pub trait Service: Debug + Sized + internal::ServiceInternal<Self> + Clone + Sen
     /// ```
     fn list<F: FnMut(ServiceDetails<Self>) -> CallbackProgression>(
         config: &config::Config,
-        mut callback: F,
+        mut on_service_details: F,
     ) -> Result<(), ServiceListError> {
         let msg = "Unable to list all services";
         let origin = "Service::list_from_config()";
@@ -1097,7 +1097,7 @@ pub trait Service: Debug + Sized + internal::ServiceInternal<Self> + Clone + Sen
                 }
             };
             if let Ok(Some(service_details)) = __internal_details::<Self>(config, &hash)
-                && callback(service_details) == CallbackProgression::Stop
+                && on_service_details(service_details) == CallbackProgression::Stop
             {
                 break;
             }
