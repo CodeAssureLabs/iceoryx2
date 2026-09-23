@@ -19,7 +19,7 @@ use crate::node::node_name::NodeName;
 /// Aborts when `name` is empty; an empty node name can never be resolved by the
 /// discovery service.
 #[allow(dead_code)]
-pub(crate) fn assert_valid_node_name(name: &NodeName) {
+fn assert_valid_node_name(name: &NodeName) {
     if name.as_str().is_empty() {
         fatal_panic!(from "assert_valid_node_name", "The node name must not be empty.");
     }
