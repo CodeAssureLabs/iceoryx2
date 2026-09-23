@@ -298,7 +298,7 @@ impl Directory {
         let origin = "Directory::create()";
         let msg = format!("Unable to create directory \"{path}\"");
 
-        if unsafe { posix::mkdir(path.as_c_str(), permission.as_mode()) } == -1 {
+        if unsafe { posix::mkdir(path.as_c_str(), permission.to_mode()) } == -1 {
             handle_errno!(DirectoryCreateError, from origin,
                 Errno::EACCES => (InsufficientPermissions, "{} due to insufficient permissions.", msg),
                 Errno::EEXIST => (DirectoryAlreadyExists, "{} since the directory already exists.", msg),
@@ -496,24 +496,21 @@ impl Directory {
         for i in 0..number_of_directory_entries {
             let raw_name =
                 unsafe { (*(*namelist.offset(i as isize))).d_name.as_ptr() as *mut posix::c_char };
-            let raw_name_length = unsafe { strnlen(raw_name, FileName::max_len()) };
-
-            if raw_name_length == 0 {
-                continue;
-            }
 
             const DOT: posix::c_char = b'.' as _;
-            // dot is skipped
-            if raw_name_length == 1 && unsafe { *raw_name == DOT } {
-                continue;
-            }
-
-            // dot dot is skipped
-            if raw_name_length == 2
-                && unsafe { *raw_name == DOT }
-                && unsafe { *raw_name.offset(1) == DOT }
-            {
-                continue;
+            // Skip dot and dot-dot entries by checking the first characters
+            unsafe {
+                if *raw_name == 0 {
+                    continue; // empty name
+                }
+                if *raw_name == DOT {
+                    if *raw_name.offset(1) == 0 {
+                        continue; // "."
+                    }
+                    if *raw_name.offset(1) == DOT && *raw_name.offset(2) == 0 {
+                        continue; // ".."
+                    }
+                }
             }
 
             match unsafe { FileName::from_c_str(raw_name) } {
@@ -541,10 +538,16 @@ impl Directory {
     }
 
     /// Returns true if a directory already exists, otherwise false
-    pub fn does_exist(path: &Path) -> Result<bool, MetadataFromPathError> {
-        let origin = "Directory::does_exist()";
-        let msg = format!("Unable to determine if directory \"{path}\" does exist");
-        Metadata::does_exist(path, origin, &msg, FileType::Directory)
+    pub fn does_exist(path: &Path) -> Result<bool, DirectoryOpenError> {
+        if unsafe { posix::access(path.as_c_str(), posix::F_OK) } == -1 {
+            match Errno::get() {
+                Errno::ENOENT => return Ok(false),
+                Errno::EACCES => return Err(DirectoryOpenError::InsufficientPermissions),
+                Errno::ELOOP => return Err(DirectoryOpenError::LoopInSymbolicLinks),
+                _ => return Err(DirectoryOpenError::DoesNotExist),
+            }
+        }
+        Ok(true)
     }
 
     fn acquire_metadata(

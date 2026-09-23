@@ -521,7 +521,7 @@ impl File {
                         .expect("CreationMode required when creating new file.")
                         .as_oflag()
                         | config.access_mode.as_oflag(),
-                    config.permission.as_mode(),
+                    config.permission.to_mode(),
                 )
             }))
         };
@@ -924,10 +924,16 @@ impl File {
     }
 
     /// Returns true if `path` exists, otherwise false.
-    pub fn does_exist(path: &FilePath) -> Result<bool, MetadataFromPathError> {
-        let origin = "File::does_exist()";
-        let msg = format!("Unable to determine if file \"{path}\" does exist");
-        Metadata::does_exist(&path.into(), origin, &msg, FileType::File)
+    pub fn does_exist(path: &FilePath) -> Result<bool, FileOpenError> {
+        if unsafe { posix::access(path.as_c_str(), posix::F_OK) } == -1 {
+            match Errno::get() {
+                Errno::ENOENT => return Ok(false),
+                Errno::EACCES => return Err(FileOpenError::InsufficientPermissions),
+                Errno::ELOOP => return Err(FileOpenError::LoopInSymbolicLinks),
+                _ => return Err(FileOpenError::FileDoesNotExist),
+            }
+        }
+        Ok(true)
     }
 
     /// Deletes the file managed by self
@@ -1048,7 +1054,7 @@ impl File {
         this: &T,
         permission: Permission,
     ) -> Result<(), FileSetPermissionError> {
-        if unsafe { posix::fchmod(this.file_descriptor().native_handle(), permission.as_mode()) }
+        if unsafe { posix::fchmod(this.file_descriptor().native_handle(), permission.to_mode()) }
             == 0
         {
             return Ok(());

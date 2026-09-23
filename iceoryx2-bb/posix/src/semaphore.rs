@@ -544,7 +544,7 @@ impl NamedSemaphore {
                 posix::sem_create(
                     file_path.as_c_str(),
                     posix::O_CREAT | posix::O_EXCL,
-                    permission.as_mode(),
+                    permission.to_mode(),
                     initial_value,
                 )
             },
