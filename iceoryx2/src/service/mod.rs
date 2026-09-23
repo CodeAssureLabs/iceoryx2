@@ -220,6 +220,11 @@ pub mod port_factory;
 /// Represents the name of a [`Service`]
 pub mod service_name;
 
+/// Helpers around the internal service name prefix.
+mod naming_prefix;
+#[cfg(test)]
+pub use naming_prefix::strip_internal_prefix;
+
 /// Represents the unique hash of a [`Service`]
 pub mod service_hash;
 
@@ -1104,8 +1109,7 @@ pub trait Service: Debug + Sized + internal::ServiceInternal<Self> + Clone + Sen
     }
 }
 
-#[doc(hidden)]
-pub fn __internal_details<S: Service>(
+pub(crate) fn __internal_details<S: Service>(
     config: &config::Config,
     service_hash: &ServiceHash,
 ) -> Result<Option<ServiceDetails<S>>, ServiceDetailsError> {

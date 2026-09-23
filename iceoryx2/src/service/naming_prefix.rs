@@ -10,17 +10,14 @@
 //
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
-#![cfg_attr(not(feature = "std"), no_std)]
+//! Helpers to inspect the internal `iox2://` prefix of a [`ServiceName`].
 
-extern crate alloc;
-extern crate iceoryx2_bb_loggers;
+use crate::service::service_name::{INTERNAL_SERVICE_PREFIX, ServiceName};
 
-pub mod attribute_tests;
-pub mod naming_prefix_tests;
-pub mod node_name_tests;
-pub mod port_name_tests;
-pub mod service_event_thread_safety_tests;
-pub mod service_publish_subscribe_thread_safety_tests;
-pub mod service_request_response_thread_safety_tests;
-pub mod service_static_config_tests;
-pub mod unique_id_generator_tests;
+/// Returns the service name without the internal `iox2://` prefix. Names without
+/// the prefix are returned unchanged.
+pub(super) fn strip_internal_prefix(name: &ServiceName) -> &str {
+    name.as_str()
+        .strip_prefix(INTERNAL_SERVICE_PREFIX)
+        .unwrap_or(name.as_str())
+}
