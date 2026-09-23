@@ -12,62 +12,31 @@
 
 use core::time::Duration;
 
-use alloc::collections::btree_set::BTreeSet;
-use alloc::vec::Vec;
-use alloc::{format, string::String};
-
-use iceoryx2_bb_posix::adaptive_wait::AdaptiveWaitBuilder;
+use alloc::string::String;
 
 pub trait Testing {
     /// Configuration type of the backend under test.
     type BackendConfig: Default;
 
     /// Backend configuration the conformance tests create gateways with.
-    fn backend_config() -> Self::BackendConfig {
-        Self::BackendConfig::default()
-    }
+    ///
+    /// Implemented per backend rather than defaulted here: the backend's
+    /// concrete `BackendConfig` type lives above this crate's layer, so only
+    /// the implementor may call its `Default::default()`.
+    fn backend_config() -> Self::BackendConfig;
 
     fn sync(_id: String, _timeout: Duration) -> bool {
         true
     }
 
     /// Polls `f` with an adaptive backoff until it succeeds or `timeout`
-    /// elapses. The distinct failure reasons observed are listed in the error.
-    fn retry<F>(mut f: F, timeout: Duration) -> Result<(), String>
+    /// elapses. The distinct failure reasons observed are listed in the
+    /// error.
+    ///
+    /// Implemented per backend rather than defaulted here: the adaptive-wait
+    /// polling loop lives above this crate's layer, alongside the other test
+    /// support the implementor already brings in.
+    fn retry<F>(f: F, timeout: Duration) -> Result<(), String>
     where
-        F: FnMut() -> Result<(), &'static str>,
-    {
-        let mut errors = BTreeSet::<&'static str>::new();
-
-        let mut adaptive_wait = AdaptiveWaitBuilder::new()
-            .create()
-            .expect("failed to create adaptive wait");
-
-        let succeeded = adaptive_wait
-            .timed_wait_while(
-                || -> Result<bool, ()> {
-                    match f() {
-                        Ok(()) => Ok(false),
-                        Err(failure) => {
-                            errors.insert(failure);
-                            Ok(true)
-                        }
-                    }
-                },
-                timeout,
-            )
-            .expect("failed to wait");
-
-        if succeeded {
-            return Ok(());
-        }
-
-        errors.insert("Timeout exceeded.");
-        let errors_formatted = errors
-            .iter()
-            .map(|e| format!("  - {}", e))
-            .collect::<Vec<_>>()
-            .join("\n");
-        Err(errors_formatted)
-    }
+        F: FnMut() -> Result<(), &'static str>;
 }
