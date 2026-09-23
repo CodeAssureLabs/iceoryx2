@@ -31,6 +31,7 @@ iceoryx2-pal-configuration = { workspace = true }
 iceoryx2-pal-posix = { workspace = true }
 
 serde = { workspace = true }
+sha1_smol = { workspace = true }
 
 [dev-dependencies]
 iceoryx2-bb-loggers = { workspace = true, features = ["std"] }

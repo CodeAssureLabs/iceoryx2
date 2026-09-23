@@ -18,6 +18,7 @@ pub mod base64url_tests;
 pub mod file_name_tests;
 pub mod file_path_tests;
 pub mod group_name_tests;
+pub mod hashed_file_name_tests;
 pub mod ipv4_address_tests;
 pub mod path_tests;
 pub mod port_tests;

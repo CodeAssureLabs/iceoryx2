@@ -21,6 +21,7 @@ pub mod base64url;
 pub mod file_name;
 pub mod file_path;
 pub mod group_name;
+pub mod hashed_file_name;
 pub mod ipv4_address;
 pub mod path;
 pub mod port;
