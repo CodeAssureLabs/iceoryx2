@@ -11,7 +11,7 @@
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 use iceoryx2::prelude::*;
-use iceoryx2::service::naming_prefix::strip_internal_prefix;
+use iceoryx2::service::strip_internal_prefix;
 
 #[test]
 fn naming_prefix_strip_internal_prefix_removes_prefix() {
