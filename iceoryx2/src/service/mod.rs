@@ -220,6 +220,9 @@ pub mod port_factory;
 /// Represents the name of a [`Service`]
 pub mod service_name;
 
+/// Helpers around the internal service name prefix.
+pub mod naming_prefix;
+
 /// Represents the unique hash of a [`Service`]
 pub mod service_hash;
 
@@ -1184,7 +1187,7 @@ fn read_static_service_config<S: Service>(
     };
 
     let mut content = CoreString::from_utf8(vec![b' '; reader.len() as usize]).unwrap();
-    match reader.read(unsafe { content.as_mut_vec().as_mut_slice() }) {
+    match StaticStorage::read(&reader, unsafe { content.as_mut_vec().as_mut_slice() }) {
         Ok(_) => (),
         Err(StaticStorageReadError::Interrupt) => {
             fail!(from origin, with ServiceDetailsError::Interrupt,
