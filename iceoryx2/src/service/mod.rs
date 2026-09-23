@@ -222,6 +222,8 @@ pub mod service_name;
 
 /// Helpers around the internal service name prefix.
 mod naming_prefix;
+#[cfg(test)]
+pub use naming_prefix::strip_internal_prefix;
 
 /// Represents the unique hash of a [`Service`]
 pub mod service_hash;
