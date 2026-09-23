@@ -19,6 +19,7 @@ pub mod attribute_tests;
 pub mod node_name_tests;
 pub mod port_name_tests;
 pub mod service_event_thread_safety_tests;
+pub mod service_naming_prefix_tests;
 pub mod service_publish_subscribe_thread_safety_tests;
 pub mod service_request_response_thread_safety_tests;
 pub mod service_static_config_tests;
