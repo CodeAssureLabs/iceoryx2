@@ -14,12 +14,13 @@
 //! global management segment.
 
 use crate::node::node_name::NodeName;
+use iceoryx2_log::fatal_panic;
 
 /// Aborts when `name` is empty; an empty node name can never be resolved by the
 /// discovery service.
 #[allow(dead_code)]
 pub(crate) fn assert_valid_node_name(name: &NodeName) {
     if name.as_str().is_empty() {
-        panic!("The node name must not be empty.");
+        fatal_panic!(from "NodeName::assert_valid_node_name()", "The node name must not be empty.");
     }
 }
