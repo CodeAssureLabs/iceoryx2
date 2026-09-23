@@ -1058,6 +1058,7 @@ dependencies = [
  "iceoryx2-pal-configuration",
  "iceoryx2-pal-posix",
  "serde",
+ "sha1_smol",
 ]
 
 [[package]]
