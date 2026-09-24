@@ -32,7 +32,6 @@ pub mod named_concept;
 pub mod reactor;
 pub mod resizable_shared_memory;
 pub mod serialize;
-pub mod service_key;
 pub mod shared_memory;
 pub mod shm_allocator;
 pub mod static_storage;
