@@ -29,6 +29,7 @@ use alloc::string::String;
 
 use iceoryx2_bb_container::semantic_string::{SemanticString, SemanticStringError};
 use iceoryx2_bb_system_types::base64url::Base64Url;
+use iceoryx2_bb_system_types::file_name::FileName;
 
 pub mod recommended;
 pub mod sha1;
@@ -49,6 +50,12 @@ impl HashValue {
     /// Returns the base64url representation of the [`HashValue`]
     pub fn as_base64url(&self) -> &Base64Url {
         &self.value
+    }
+
+    /// Returns the [`HashValue`] as a [`FileName`], e.g. to map an arbitrary
+    /// identifier onto a fixed-length, file-system safe name.
+    pub fn as_file_name(&self) -> FileName {
+        self.value.as_file_name()
     }
 }
 
