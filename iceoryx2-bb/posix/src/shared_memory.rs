@@ -461,7 +461,7 @@ impl SharedMemory {
             posix::shm_open(
                 file_path.as_c_str(),
                 AccessMode::Read.as_oflag(),
-                Permission::none().as_mode(),
+                Permission::none().to_mode(),
             )
         })
         .is_some()
@@ -566,7 +566,7 @@ impl SharedMemory {
             posix::shm_open(
                 file_path.as_c_str(),
                 CreationMode::CreateExclusive.as_oflag() | config.access_mode.as_oflag(),
-                config.permission.as_mode(),
+                config.permission.to_mode(),
             )
         });
 
@@ -596,7 +596,7 @@ impl SharedMemory {
             posix::shm_open(
                 file_path.as_c_str(),
                 config.access_mode.as_oflag(),
-                Permission::none().as_mode(),
+                Permission::none().to_mode(),
             )
         });
 
