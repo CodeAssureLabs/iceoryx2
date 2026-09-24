@@ -163,7 +163,7 @@ impl Permission {
     }
 
     /// Converts the permissions into the C type `mode_t`.
-    pub fn to_mode(&self) -> posix::mode_t {
+    pub fn to_mode(self) -> posix::mode_t {
         self.0
     }
 }

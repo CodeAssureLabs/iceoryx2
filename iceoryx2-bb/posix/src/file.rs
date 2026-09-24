@@ -521,7 +521,7 @@ impl File {
                         .expect("CreationMode required when creating new file.")
                         .as_oflag()
                         | config.access_mode.as_oflag(),
-                    config.permission.as_mode(),
+                    config.permission.to_mode(),
                 )
             }))
         };
@@ -1048,7 +1048,7 @@ impl File {
         this: &T,
         permission: Permission,
     ) -> Result<(), FileSetPermissionError> {
-        if unsafe { posix::fchmod(this.file_descriptor().native_handle(), permission.as_mode()) }
+        if unsafe { posix::fchmod(this.file_descriptor().native_handle(), permission.to_mode()) }
             == 0
         {
             return Ok(());
