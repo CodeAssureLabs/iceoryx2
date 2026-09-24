@@ -204,16 +204,16 @@ pub trait SemaphoreInterface: internal::SemaphoreHandle + Debug {
                     .clock_type(self.clock_type())
                     .create(), "{} since the adaptive wait could not be created.", msg);
 
-                match adaptive_wait.timed_wait_while(
+                match adaptive_wait.wait_while_with_timeout(
                     || -> Result<bool, SemaphoreWaitError> { Ok(!self.try_wait()?) },
                     timeout,
                 ) {
                     Ok(v) => Ok(v),
-                    Err(AdaptiveTimedWaitWhileError::PredicateFailure(v)) => {
+                    Err(AdaptiveWaitWhileWithTimeoutError::PredicateFailure(v)) => {
                         fail!(from self, with SemaphoreTimedWaitError::from(v),
                             "{} since try_wait() failed with ({:?}).", msg, v);
                     }
-                    Err(AdaptiveTimedWaitWhileError::AdaptiveWaitError(v)) => {
+                    Err(AdaptiveWaitWhileWithTimeoutError::AdaptiveWaitError(v)) => {
                         fail!(from self, with SemaphoreTimedWaitError::from(v),
                              "{} since adaptive wait failed with ({:?}).", msg, v);
                     }

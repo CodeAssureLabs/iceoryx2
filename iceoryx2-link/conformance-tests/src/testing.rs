@@ -52,7 +52,7 @@ pub fn retry(
         .create()
         .expect("adaptive wait is created");
     let succeeded = wait
-        .timed_wait_while(
+        .wait_while_with_timeout(
             || -> Result<bool, ()> {
                 match attempt() {
                     Ok(()) => Ok(false),
