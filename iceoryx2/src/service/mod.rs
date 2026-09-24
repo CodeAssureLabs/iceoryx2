@@ -220,9 +220,6 @@ pub mod port_factory;
 /// Represents the name of a [`Service`]
 pub mod service_name;
 
-/// Helpers around the internal service name prefix.
-pub mod naming_prefix;
-
 /// Represents the unique hash of a [`Service`]
 pub mod service_hash;
 
