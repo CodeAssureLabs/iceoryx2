@@ -10,7 +10,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
-//! Helpers to inspect the internal `iox2://` prefix of a [`ServiceName`].
+//! Helpers to inspect the internal `iox2://` prefix of a [`ServiceName`](crate::service::service_name::ServiceName).
 
 use crate::service::service_name::{INTERNAL_SERVICE_PREFIX, ServiceName};
 
