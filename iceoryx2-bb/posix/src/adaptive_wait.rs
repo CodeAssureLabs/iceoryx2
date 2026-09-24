@@ -93,24 +93,26 @@ enum_gen! { AdaptiveWaitError
 }
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
-pub enum AdaptiveTimedWaitWhileError<T: Debug> {
+pub enum AdaptiveWaitWhileWithTimeoutError<T: Debug> {
     AdaptiveWaitError(AdaptiveWaitError),
     PredicateFailure(T),
 }
 
-impl<T: Debug> From<T> for AdaptiveTimedWaitWhileError<T> {
+impl<T: Debug> From<T> for AdaptiveWaitWhileWithTimeoutError<T> {
     fn from(v: T) -> Self {
-        AdaptiveTimedWaitWhileError::PredicateFailure(v)
+        AdaptiveWaitWhileWithTimeoutError::PredicateFailure(v)
     }
 }
 
-impl<T: Debug> Display for AdaptiveTimedWaitWhileError<T> {
+impl<T: Debug> Display for AdaptiveWaitWhileWithTimeoutError<T> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "AdaptiveTimedWaitWhileError::{:?}", self)
+        write!(f, "AdaptiveWaitWhileWithTimeoutError::{:?}", self)
     }
 }
 
-impl<T: Debug> core::error::Error for AdaptiveTimedWaitWhileError<T> {}
+impl<T: Debug> core::error::Error for AdaptiveWaitWhileWithTimeoutError<T> {}
+
+pub type AdaptiveTimedWaitWhileError<T> = AdaptiveWaitWhileWithTimeoutError<T>;
 
 /// AdaptiveWait is a building block which can be integrated into busy loops to make
 /// them less CPU consuming. The strategy is that for [`ADAPTIVE_WAIT_YIELD_REPETITIONS`] the
@@ -205,7 +207,7 @@ impl AdaptiveWait {
         &mut self,
         mut predicate: F,
         timeout: Duration,
-    ) -> Result<bool, AdaptiveTimedWaitWhileError<T>> {
+    ) -> Result<bool, AdaptiveWaitWhileWithTimeoutError<T>> {
         let msg = "Failed to wait with predicate and timeout";
 
         loop {
@@ -215,7 +217,7 @@ impl AdaptiveWait {
 
             let result = self.wait();
             if result.is_err() {
-                fail!(from self, with AdaptiveTimedWaitWhileError::AdaptiveWaitError(result.err().unwrap()),
+                fail!(from self, with AdaptiveWaitWhileWithTimeoutError::AdaptiveWaitError(result.err().unwrap()),
                     "{} since the underlying wait failed.", msg);
             }
 
