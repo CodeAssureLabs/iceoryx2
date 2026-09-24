@@ -108,6 +108,7 @@ pub mod posix {
     use super::*;
 
     pub use common::cpu_set_t::cpu_set_t;
+    pub use common::dirent_name::dirent_name_capacity;
     pub use common::mem_zeroed_struct::MemZeroedStruct;
     pub use common::sockaddr_in::SockAddrIn;
 
