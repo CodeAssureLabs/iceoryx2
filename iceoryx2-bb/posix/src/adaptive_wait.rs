@@ -198,10 +198,10 @@ impl AdaptiveWait {
     /// use core::time::Duration;
     ///
     /// AdaptiveWaitBuilder::new()
-    ///     .create().unwrap().wait_while_with_timeout(|| -> Result<bool, ()> { Ok(true) },
+    ///     .create().unwrap().timed_wait_while(|| -> Result<bool, ()> { Ok(true) },
     ///                                         Duration::from_millis(50));
     /// ```
-    pub fn wait_while_with_timeout<T: Debug, F: FnMut() -> Result<bool, T>>(
+    pub fn timed_wait_while<T: Debug, F: FnMut() -> Result<bool, T>>(
         &mut self,
         mut predicate: F,
         timeout: Duration,
