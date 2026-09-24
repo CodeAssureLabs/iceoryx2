@@ -115,6 +115,14 @@ impl ServiceName {
         name.starts_with(INTERNAL_SERVICE_PREFIX)
     }
 
+    /// Returns the name without the internal `iox2://` prefix. Names of user-defined
+    /// services are returned unchanged.
+    pub fn strip_iox2_prefix(&self) -> &str {
+        self.as_str()
+            .strip_prefix(INTERNAL_SERVICE_PREFIX)
+            .unwrap_or(self.as_str())
+    }
+
     /// Returns the maximum length of a [`ServiceName`].
     pub fn max_len() -> usize {
         ServiceNameString::capacity()
