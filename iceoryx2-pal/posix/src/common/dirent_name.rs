@@ -12,10 +12,10 @@
 
 //! Buffer sizing for directory-entry names returned by the platform layer.
 
-use iceoryx2_bb_system_types::file_name::FileName;
+use iceoryx2_pal_configuration::FILENAME_LENGTH;
 
 /// Returns the number of bytes a caller has to reserve for one directory-entry
 /// name, including the terminating null byte.
 pub const fn dirent_name_capacity() -> usize {
-    FileName::max_len() + 1
+    FILENAME_LENGTH + 1
 }
