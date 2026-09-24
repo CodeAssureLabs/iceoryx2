@@ -93,12 +93,12 @@ pub fn wait_increases_yield_counter() {
 }
 
 #[test]
-pub fn timed_wait_while_wait_at_least_for_timeout() {
+pub fn wait_while_with_timeout_wait_at_least_for_timeout() {
     let mut sut = AdaptiveWaitBuilder::new().create().unwrap();
     let start = Time::now().expect("failed to get current time");
 
     let result = sut
-        .timed_wait_while(|| -> Result<bool, ()> { Ok(true) }, TIMEOUT)
+        .wait_while_with_timeout(|| -> Result<bool, ()> { Ok(true) }, TIMEOUT)
         .unwrap();
 
     assert_that!(start.elapsed().expect("failed to get elapsed time"), time_at_least TIMEOUT);
@@ -111,7 +111,7 @@ pub fn timed_wait_does_not_wait_when_predicate_returns_false() {
     let start = Time::now().expect("failed to get current time");
 
     let result = sut
-        .timed_wait_while(|| -> Result<bool, ()> { Ok(false) }, TIMEOUT)
+        .wait_while_with_timeout(|| -> Result<bool, ()> { Ok(false) }, TIMEOUT)
         .unwrap();
 
     assert_that!(start.elapsed().expect("failed to get elapsed time"), lt TIMEOUT);
@@ -123,7 +123,7 @@ pub fn timed_wait_does_not_wait_when_predicate_returns_error() {
     let mut sut = AdaptiveWaitBuilder::new().create().unwrap();
     let start = Time::now().expect("failed to get current time");
 
-    let result = sut.timed_wait_while(|| -> Result<bool, i32> { Err(5) }, TIMEOUT);
+    let result = sut.wait_while_with_timeout(|| -> Result<bool, i32> { Err(5) }, TIMEOUT);
 
     assert_that!(start.elapsed().expect("failed to get elapsed time"), lt TIMEOUT);
     assert_that!(result, is_err);
