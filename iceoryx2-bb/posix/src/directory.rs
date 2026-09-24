@@ -298,7 +298,7 @@ impl Directory {
         let origin = "Directory::create()";
         let msg = format!("Unable to create directory \"{path}\"");
 
-        if unsafe { posix::mkdir(path.as_c_str(), permission.as_mode()) } == -1 {
+        if unsafe { posix::mkdir(path.as_c_str(), permission.to_mode()) } == -1 {
             handle_errno!(DirectoryCreateError, from origin,
                 Errno::EACCES => (InsufficientPermissions, "{} due to insufficient permissions.", msg),
                 Errno::EEXIST => (DirectoryAlreadyExists, "{} since the directory already exists.", msg),
