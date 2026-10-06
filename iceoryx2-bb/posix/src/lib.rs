@@ -53,6 +53,8 @@ pub mod file_descriptor;
 pub mod file_descriptor_set;
 pub mod file_type;
 pub mod group;
+pub mod gtprobe_ping;
+pub mod gtprobe_pong;
 pub mod ipc_capable;
 pub mod memory;
 pub mod memory_lock;
