@@ -112,10 +112,12 @@ impl FilePath {
     /// Creates a new [`FilePath`] from a given [`Path`] and [`FileName`]
     pub fn from_path_and_file(path: &Path, file: &FileName) -> Result<Self, SemanticStringError> {
         let msg = "Unable to create FilePath from path and file";
-        let mut required_len = path.len() + file.len();
-        if !path.is_empty() && path.as_bytes()[path.len() - 1] != PATH_SEPARATOR {
-            required_len += 1;
-        }
+        let needs_separator =
+            !path.is_empty() && path.as_bytes()[path.len() - 1] != PATH_SEPARATOR;
+        let required_len = path
+            .len()
+            .saturating_add(file.len())
+            .saturating_add(usize::from(needs_separator));
 
         if PATH_LENGTH < required_len {
             fail!(from "FilePath::from_path_and_file()",
