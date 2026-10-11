@@ -140,6 +140,7 @@
 //! ```
 
 pub(crate) mod global_management_segment;
+pub(crate) mod name_validation;
 /// The name for a node.
 pub mod node_name;
 
